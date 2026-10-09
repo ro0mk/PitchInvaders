@@ -199,20 +199,24 @@ export class Enemies {
     // ---------- Dificuldade ----------
     if (playing) {
       this.alert = Math.min(5, 1 + Math.floor(game.runTime / 28) + (game.scoring.combo >= 8 ? 1 : 0));
-      const maxActive = (this.maxActive = [0, 4, 6, 8, 10, 13][this.alert]);
+      // Vagas separadas: seguranças e (a partir do nível 2) polícias/cães.
+      const capS = [0, 4, 5, 6, 7, 8][this.alert];
+      const capK = [0, 0, 2, 3, 4, 5][this.alert];
+      this.maxActive = capS + capK;
       const interval = [0, 5.5, 4.7, 4.1, 3.5, 2.9][this.alert];
       this.spawnTimer -= dt;
       if (this.spawnTimer <= 0) {
         this.spawnTimer = interval * rand(0.85, 1.15);
-        if (this.activeCount() < maxActive) {
-          const r = Math.random();
-          let type = 'steward';
-          if (this.alert >= 2 && r < 0.4) type = 'police';
-          if (this.alert >= 3 && r < 0.55) type = 'police';
-          if (this.alert >= 4 && r < 0.22) type = 'dog';
-          if (this.alert >= 5 && r < 0.28) type = 'dog';
-          this.spawn(type, P, game);
+        let nS = 0, nK = 0, nDog = 0;
+        for (const e of this.list) {
+          if (!e.active) continue;
+          if (e.type === 'steward') nS++;
+          else { nK++; if (e.type === 'dog') nDog++; }
         }
+        let type = null;
+        if (nK < capK && (nS >= capS || Math.random() < 0.6)) type = nDog < this.alert - 3 ? 'dog' : 'police';
+        else if (nS < capS) type = 'steward';
+        if (type) this.spawn(type, P, game);
       }
     }
 

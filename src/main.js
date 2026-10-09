@@ -402,7 +402,7 @@ class Game {
           this.handleDodge(ev.enemy, ev.lunge);
           break;
         case 'crash': {
-          if (Math.hypot(ev.a.pos.x - P.x, ev.a.pos.z - P.z) > 12) break;
+          if (Math.hypot(ev.a.pos.x - P.x, ev.a.pos.z - P.z) > 8) break;
           S.stats.crashes++;
           S.award(150, 'CHOQUE!', { sub: 'Chocaram um contra o outro', color: '#ff9f1a' });
           this.audio.thud();
