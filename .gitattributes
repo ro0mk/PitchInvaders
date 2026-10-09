@@ -1,8 +1,6 @@
-# Scripts com quebras de linha Unix mesmo em clones no Windows (core.autocrlf).
-*.sh        text eol=lf
-*.command   text eol=lf
-*.mjs       text eol=lf
-*.cjs       text eol=lf
+# Tudo o que é texto fica com quebras de linha Unix, também em clones no Windows
+# (core.autocrlf): o jogo e o Jogar.exe gerados têm de sair iguais aos do CI.
+* text=auto eol=lf
 # O jogo publicado é comparado byte a byte com o build no CI.
 dist/PitchInvaders.html  -text
 # Binários
