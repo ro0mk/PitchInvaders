@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pitch Invaders</title>
+  <!-- STYLE -->
+</head>
+<body>
+  <div id="app">
+    <canvas id="game"></canvas>
+    <canvas id="overlay"></canvas>
+
+    <div id="hud" class="hidden">
+      <div class="panel tl">
+        <div class="lbl">TEMPO EM CAMPO</div>
+        <div id="h-time" class="big">00:00.0</div>
+        <div class="rec">RECORDE <span id="h-best-time">00:00.0</span></div>
+      </div>
+      <div class="panel tr">
+        <div class="lbl">XP</div>
+        <div id="h-xp" class="big">0</div>
+        <div class="rec">RECORDE <span id="h-best-xp">0</span></div>
+      </div>
+      <div id="h-center">
+        <div id="h-alert" title="Nível de alerta"></div>
+        <div id="h-combo">
+          <div class="cm"><span id="h-mult">×1</span> <span id="h-combo-n"></span></div>
+          <div class="cbar"><i id="h-combo-bar"></i></div>
+        </div>
+      </div>
+      <div class="panel bl">
+        <div class="lbl">ENERGIA <span id="h-tired"></span></div>
+        <div class="sbar"><i id="h-stamina"></i></div>
+        <div class="keys">
+          <span><b>Q</b>/<b>E</b> Finta</span>
+          <span><b>F</b> Roleta</span>
+          <span><b>Espaço</b> Salto</span>
+          <span><b>C</b> Deslize</span>
+          <span><b>Shift</b> Sprint</span>
+        </div>
+      </div>
+      <canvas id="minimap" width="236" height="160"></canvas>
+      <div id="popups"></div>
+      <div id="banner"></div>
+      <div id="struggle" class="hidden">
+        <div class="st-title">AGARRADO! LIBERTA-TE!</div>
+        <div class="st-bar"><i id="st-fill"></i></div>
+        <div class="st-hint">Carrega <b>ESPAÇO</b> sem parar (ou alterna <b>A</b>/<b>D</b>)</div>
+        <div class="st-time"><i id="st-time"></i></div>
+      </div>
+      <div id="selfie-prompt" class="hidden">Prime <b>T</b> para uma selfie com <span id="selfie-name"></span>! 📸</div>
+      <div id="click-hint" class="hidden">Clica no ecrã para controlar a câmara com o rato</div>
+      <div id="flash"></div>
+    </div>
+
+    <div id="menu" class="screen">
+      <div class="logo"><span class="l1">PITCH</span><span class="l2">INVADERS</span></div>
+      <div class="tagline">Salta a vedação. Invade o relvado. Foge à segurança o máximo de tempo possível.</div>
+      <div class="career">
+        <div class="ct">Nível <b id="m-level">1</b> · <span id="m-title"></span></div>
+        <div class="xpbar"><i id="m-xpbar"></i></div>
+        <small id="m-xptext"></small>
+      </div>
+      <div class="records">
+        <div><small>MELHOR TEMPO</small><b id="m-best-time">--</b></div>
+        <div><small>MELHOR XP</small><b id="m-best-xp">0</b></div>
+        <div><small>MELHOR COMBO</small><b id="m-best-combo">0</b></div>
+        <div><small>INVASÕES</small><b id="m-runs">0</b></div>
+      </div>
+      <button id="btn-play" class="btn primary">INVADIR O CAMPO</button>
+      <div class="row">
+        <button id="btn-controls" class="btn">CONTROLOS E DICAS</button>
+        <button id="btn-settings" class="btn">OPÇÕES</button>
+      </div>
+      <div class="foot">Enter para jogar · funciona com comando</div>
+    </div>
+
+    <div id="controls" class="screen hidden">
+      <h2>CONTROLOS</h2>
+      <div class="cols">
+        <table>
+          <tr><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></td><td>Correr</td></tr>
+          <tr><td><kbd>Rato</kbd> ou <kbd>←</kbd><kbd>→</kbd></td><td>Rodar a câmara</td></tr>
+          <tr><td><kbd>Shift</kbd></td><td>Sprint (gasta energia)</td></tr>
+          <tr><td><kbd>Q</kbd> / <kbd>E</kbd></td><td><b>Finta</b> para a esquerda / direita</td></tr>
+          <tr><td><kbd>F</kbd> ou <kbd>Botão direito</kbd></td><td><b>Roleta</b> — invencível durante o giro</td></tr>
+          <tr><td><kbd>Espaço</kbd></td><td><b>Salto</b> — passa por cima das placagens</td></tr>
+          <tr><td><kbd>C</kbd></td><td><b>Deslize</b> — passa por baixo dos agarrões</td></tr>
+          <tr><td><kbd>T</kbd></td><td>Selfie com um craque ★</td></tr>
+          <tr><td><kbd>Esc</kbd> / <kbd>P</kbd></td><td>Pausa</td></tr>
+          <tr><td>🎮 Comando</td><td>Stick esq. correr · stick dir. câmara<br>A salto · B deslize · X roleta · LB/RB finta<br>RT sprint · Y selfie · Start pausa</td></tr>
+        </table>
+        <ul class="tips">
+          <li><span class="tag y">!</span> amarelo — <b>segurança</b> vai agarrar (ataque alto): <b>Deslize</b>, <b>Roleta</b> ou <b>Finta</b>.</li>
+          <li><span class="tag r">!</span> vermelho — <b>polícia</b> vai placar (ataque baixo): <b>Salta</b>, <b>Roleta</b> ou <b>Finta</b>.</li>
+          <li><span class="tag o">!</span> laranja — <b>cão</b> vai saltar: <b>Finta</b>, <b>Deslize</b> ou <b>Roleta</b>.</li>
+          <li>Truque certo no último instante = <b>PERFEITO</b>: XP a dobrar e câmara lenta.</li>
+          <li>Encadeia esquivas para subir o <b>multiplicador</b> (até ×8). Repetir o mesmo truque rende menos — varia!</li>
+          <li>Desliza entre as pernas de um segurança: <b>CUECA!</b> Salta por cima de um polícia no chão: <b>CHAPÉU!</b></li>
+          <li>Faz dois perseguidores chocarem um contra o outro: <b>CHOQUE!</b></li>
+          <li>Chuta a bola para a baliza: <b>GOLO!</b> Tira <b>selfies</b> com os craques ★.</li>
+          <li>Se te agarrarem, carrega <b>Espaço</b> para fugir — se chegar outro antes, acabou.</li>
+        </ul>
+      </div>
+      <button class="btn back">VOLTAR</button>
+    </div>
+
+    <div id="settings" class="screen hidden">
+      <h2>OPÇÕES</h2>
+      <div class="form">
+        <label>Volume <input id="s-volume" type="range" min="0" max="1" step="0.05"></label>
+        <label>Sensibilidade do rato <input id="s-sens" type="range" min="0.3" max="2.5" step="0.05"></label>
+        <label>Gráficos
+          <select id="s-quality"><option value="high">Alto (sombras)</option><option value="low">Baixo (mais rápido)</option></select>
+        </label>
+        <label class="chk"><input id="s-autocam" type="checkbox"> Câmara segue o invasor automaticamente</label>
+        <label class="chk"><input id="s-inverty" type="checkbox"> Inverter eixo vertical</label>
+        <div class="row">
+          <button id="s-fullscreen" class="btn">ECRÃ INTEIRO</button>
+          <button id="s-reset" class="btn danger">APAGAR RECORDES</button>
+        </div>
+        <small class="note">A qualidade gráfica aplica-se ao recarregar o jogo.</small>
+      </div>
+      <button class="btn back">VOLTAR</button>
+    </div>
+
+    <div id="pause" class="screen hidden">
+      <h2>PAUSA</h2>
+      <button id="btn-resume" class="btn primary">CONTINUAR</button>
+      <button id="btn-pause-controls" class="btn">CONTROLOS E DICAS</button>
+      <button id="btn-quit" class="btn">DESISTIR</button>
+    </div>
+
+    <div id="gameover" class="screen hidden">
+      <h1 class="caught">APANHADO!</h1>
+      <div id="go-record"></div>
+      <div class="go-main">
+        <div><small>TEMPO EM CAMPO</small><b id="go-time"></b></div>
+        <div><small>XP</small><b id="go-xp"></b></div>
+      </div>
+      <div class="go-stats" id="go-stats"></div>
+      <div class="career">
+        <div class="ct">Nível <b id="go-level">1</b> · <span id="go-title"></span> <span id="go-levelup"></span></div>
+        <div class="xpbar"><i id="go-xpbar"></i></div>
+        <small id="go-xptext"></small>
+      </div>
+      <button id="btn-again" class="btn primary">INVADIR OUTRA VEZ (R)</button>
+      <button id="btn-menu" class="btn">MENU</button>
+    </div>
+
+    <div id="loading">A preparar o estádio…</div>
+  </div>
+  <!-- SCRIPT -->
+</body>
+</html>

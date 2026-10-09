@@ -1,0 +1,61 @@
+{
+  "name": "pitch-invaders",
+  "productName": "Pitch Invaders",
+  "version": "1.0.0",
+  "description": "Invade o campo a meio do jogo e foge da segurança o máximo de tempo possível. Ganha XP com fintas, roletas, saltos e cuecas.",
+  "author": "Pitch Invaders",
+  "license": "MIT",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "start": "node scripts/build.mjs && electron .",
+    "dist": "node scripts/build.mjs && electron-builder --publish never",
+    "dist:win": "node scripts/build.mjs && electron-builder --win --publish never",
+    "dist:linux": "node scripts/build.mjs && electron-builder --linux --publish never",
+    "dist:mac": "node scripts/build.mjs && electron-builder --mac --publish never"
+  },
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "25.1.8",
+    "esbuild": "0.24.2",
+    "three": "0.170.0"
+  },
+  "build": {
+    "appId": "com.pitchinvaders.game",
+    "productName": "Pitch Invaders",
+    "artifactName": "PitchInvaders-${version}-${os}-${arch}.${ext}",
+    "files": [
+      "dist/PitchInvaders.html",
+      "electron/**",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": [
+        { "target": "portable", "arch": ["x64"] },
+        { "target": "nsis", "arch": ["x64"] }
+      ]
+    },
+    "portable": {
+      "artifactName": "PitchInvaders-${version}-portable.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "PitchInvaders-${version}-setup.exe"
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "category": "Game"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "category": "public.app-category.action-games"
+    }
+  }
+}

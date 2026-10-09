@@ -1,0 +1,6 @@
+node_modules/
+release/
+dist/*
+!dist/PitchInvaders.html
+*.log
+.DS_Store
