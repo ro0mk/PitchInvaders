@@ -59,8 +59,8 @@ jobs:
         with:
           files: ${{ matrix.files }}
 
-  web:
-    name: Versão browser (HTML)
+  simples:
+    name: Versão simples (Jogar.exe + PitchInvaders.zip)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -69,13 +69,38 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
+
+      - name: Verificar que o jogo publicado está atualizado
+        run: |
+          npm run build
+          if ! git diff --quiet -- dist/PitchInvaders.html; then
+            echo "::error::dist/PitchInvaders.html está desatualizado. Corre 'npm run pacote' e faz commit."
+            exit 1
+          fi
+          mkdir -p zipcheck && unzip -q PitchInvaders.zip -d zipcheck
+          for f in Jogar.exe Jogar.command dist/PitchInvaders.html; do
+            if ! cmp -s "zipcheck/$f" "$f"; then
+              echo "::error::PitchInvaders.zip tem uma versão antiga de $f. Corre 'npm run pacote' e faz commit."
+              exit 1
+            fi
+          done
+          test -x zipcheck/Jogar.command
+
+      - name: Compilar o lançador Jogar.exe (verificação)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64
+          bash scripts/build-launcher.sh /tmp/Jogar-ci.exe
+
       - uses: actions/upload-artifact@v4
         with:
-          name: PitchInvaders-HTML
-          path: dist/PitchInvaders.html
+          name: PitchInvaders-simples
+          path: zipcheck/
+
       - name: Anexar à release (apenas em tags v*)
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/PitchInvaders.html
+          files: |
+            PitchInvaders.zip
+            dist/PitchInvaders.html

@@ -10,6 +10,8 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "watch": "node scripts/build.mjs --watch",
+    "build:launcher": "bash scripts/build-launcher.sh",
+    "pacote": "bash scripts/package.sh",
     "start": "node scripts/build.mjs && electron .",
     "dist": "node scripts/build.mjs && electron-builder --publish never",
     "dist:win": "node scripts/build.mjs && electron-builder --win --publish never",
@@ -37,8 +39,18 @@
     },
     "win": {
       "target": [
-        { "target": "portable", "arch": ["x64"] },
-        { "target": "nsis", "arch": ["x64"] }
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
       ]
     },
     "portable": {
@@ -50,11 +62,15 @@
       "artifactName": "PitchInvaders-${version}-setup.exe"
     },
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Game"
     },
     "mac": {
-      "target": ["dmg"],
+      "target": [
+        "dmg"
+      ],
       "category": "public.app-category.action-games"
     }
   }

@@ -22,12 +22,14 @@ const options = {
 };
 
 async function writeHtml(js) {
-  const [template, css] = await Promise.all([
+  const [template, css, favicon] = await Promise.all([
     readFile(path.join(root, 'src', 'index.html'), 'utf8'),
     readFile(path.join(root, 'src', 'style.css'), 'utf8'),
+    readFile(path.join(root, 'build', 'favicon.png')),
   ]);
   const safeJs = js.replace(/<\/script/gi, '<\\/script');
   const html = template
+    .replace('<!-- FAVICON -->', () => `<link rel="icon" type="image/png" href="data:image/png;base64,${favicon.toString('base64')}">`)
     .replace('<!-- STYLE -->', () => `<style>\n${css}\n</style>`)
     .replace('<!-- SCRIPT -->', () => `<script>\n${safeJs}\n</script>`);
   await mkdir(path.dirname(outFile), { recursive: true });
