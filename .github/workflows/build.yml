@@ -61,7 +61,7 @@ jobs:
 
   simples:
     name: Versão simples (Jogar.exe + PitchInvaders.zip)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -70,32 +70,31 @@ jobs:
           cache: npm
       - run: npm ci
 
-      - name: Verificar que o jogo publicado está atualizado
-        run: |
-          npm run build
-          if ! git diff --quiet -- dist/PitchInvaders.html; then
-            echo "::error::dist/PitchInvaders.html está desatualizado. Corre 'npm run pacote' e faz commit."
-            exit 1
-          fi
-          mkdir -p zipcheck && unzip -q PitchInvaders.zip -d zipcheck
-          for f in Jogar.exe Jogar.command dist/PitchInvaders.html; do
-            if ! cmp -s "zipcheck/$f" "$f"; then
-              echo "::error::PitchInvaders.zip tem uma versão antiga de $f. Corre 'npm run pacote' e faz commit."
-              exit 1
-            fi
-          done
-          test -x zipcheck/Jogar.command
-
-      - name: Compilar o lançador Jogar.exe (verificação)
+      - name: Instalar MinGW-w64 (para compilar o Jogar.exe)
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64
-          bash scripts/build-launcher.sh /tmp/Jogar-ci.exe
+
+      - name: Regenerar o pacote e comparar com o que está no repositório
+        run: |
+          bash scripts/package.sh /tmp/novo.zip
+          if ! git diff --quiet -- dist/PitchInvaders.html Jogar.exe; then
+            git diff --stat -- dist/PitchInvaders.html Jogar.exe
+            echo "::error::dist/PitchInvaders.html ou Jogar.exe desatualizados. Corre 'npm run pacote' e faz commit."
+            exit 1
+          fi
+          mkdir -p /tmp/a /tmp/b
+          unzip -q PitchInvaders.zip -d /tmp/a
+          unzip -q /tmp/novo.zip -d /tmp/b
+          if ! diff -r /tmp/a /tmp/b || ! diff <(zipinfo PitchInvaders.zip | awk '/^[-d][-r]/ {print $1, $NF}') <(zipinfo /tmp/novo.zip | awk '/^[-d][-r]/ {print $1, $NF}'); then
+            echo "::error::PitchInvaders.zip desatualizado. Corre 'npm run pacote' e faz commit."
+            exit 1
+          fi
 
       - uses: actions/upload-artifact@v4
         with:
           name: PitchInvaders-simples
-          path: zipcheck/
+          path: PitchInvaders.zip
 
       - name: Anexar à release (apenas em tags v*)
         if: startsWith(github.ref, 'refs/tags/v')

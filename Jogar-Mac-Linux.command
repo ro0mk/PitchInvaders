@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Pitch Invaders — lançador para macOS e Linux.
 #
 # Abre o jogo numa janela própria, sem barra de endereço (Chrome, Edge, Brave ou
 # Chromium em modo "app"). Se nenhum existir, abre no browser predefinido.
-#   macOS: duplo clique (na primeira vez: botão direito → Abrir).
-#   Linux: ./Jogar.command
+#   macOS: duplo clique (na primeira vez o Mac pede autorização em
+#          Definições do Sistema → Privacidade e segurança → Abrir na mesma).
+#   Linux: ./Jogar-Mac-Linux.command
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 GAME="$DIR/dist/PitchInvaders.html"
@@ -20,7 +21,7 @@ fail() {
   exit 1
 }
 
-[ -f "$GAME" ] || fail "Não encontrei o ficheiro do jogo (dist/PitchInvaders.html). Se descarregaste o jogo em ZIP, extrai primeiro a pasta toda e abre o Jogar.command que está dentro dela."
+[ -f "$GAME" ] || fail "Não encontrei o ficheiro do jogo (dist/PitchInvaders.html). Se descarregaste o jogo em ZIP, extrai primeiro a pasta toda e abre o Jogar-Mac-Linux.command que está dentro dela."
 
 # Caminho -> URL file:// (UTF-8 com percent-encoding). Usa "od" para ler os bytes,
 # o que funciona igual em qualquer locale e no bash 3.2 do macOS.
@@ -43,6 +44,9 @@ if [ "$(uname)" = "Darwin" ]; then
   done
   open "$GAME" && exit 0
 else
+  # Ignorar SIGHUP: se o script for o próprio processo do terminal ("Executar no
+  # terminal"), o terminal fecha ao sair e não pode levar o browser consigo.
+  trap '' HUP
   for b in google-chrome google-chrome-stable chromium chromium-browser microsoft-edge microsoft-edge-stable brave-browser; do
     if command -v "$b" >/dev/null 2>&1; then
       nohup "$b" "${FLAGS[@]}" >/dev/null 2>&1 &

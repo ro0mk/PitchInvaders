@@ -12,5 +12,5 @@ trap 'rm -rf "$tmp"' EXIT
 "$WINDRES" -I launcher launcher/jogar.rc -O coff -o "$tmp/res.o"
 "$CC" -Os -s -municode -mwindows -Wall -Wextra -Werror \
   -Wl,--no-insert-timestamp \
-  -o "$OUT" launcher/jogar.c "$tmp/res.o" -lshell32
+  -o "$OUT" launcher/jogar.c "$tmp/res.o" -lshell32 -ladvapi32
 echo "✔ $OUT ($(wc -c < "$OUT") bytes)"

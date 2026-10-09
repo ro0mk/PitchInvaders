@@ -5,19 +5,25 @@ Salta a vedação, invade o relvado e foge da segurança o máximo de tempo poss
 
 COMO JOGAR
 ----------
-Windows: faz duplo clique em Jogar.exe.
-         Na primeira vez, se aparecer "O Windows protegeu o computador",
-         carrega em "Mais informações" e depois em "Executar mesmo assim".
+Windows: faz duplo clique em "Jogar" (o ficheiro com o ícone verde do jogo;
+         o nome completo é Jogar.exe).
+         Na primeira vez, se aparecer um aviso azul do Windows a dizer que
+         protegeu o PC, carrega em "Mais informações" e depois em
+         "Executar mesmo assim".
+         Se o Windows bloquear sem mostrar "Executar mesmo assim", abre a
+         pasta "dist" e faz duplo clique em PitchInvaders.html.
+         (O Jogar-Mac-Linux.command é só para Mac e Linux.)
 
-Mac:     botão direito em Jogar.command -> Abrir -> Abrir.
-         (Se o Mac não deixar: Definições do Sistema -> Privacidade e segurança
-         -> Abrir na mesma. Ou abre a pasta "dist" e faz duplo clique em
-         PitchInvaders.html.)
+Mac:     abre a pasta "dist" e faz duplo clique em PitchInvaders.html.
+         Para jogar numa janela própria, faz duplo clique em
+         Jogar-Mac-Linux.command. Na primeira vez o Mac bloqueia-o: carrega
+         em "Concluído" (não em "Mover para o Lixo"), vai a Definições do
+         Sistema -> Privacidade e segurança e carrega em "Abrir na mesma".
 
-Linux:   ./Jogar.command   (ou abre dist/PitchInvaders.html no browser)
+Linux:   ./Jogar-Mac-Linux.command   (ou abre dist/PitchInvaders.html)
 
 Em qualquer computador também podes abrir dist/PitchInvaders.html com duplo
-clique (Chrome, Edge ou Firefox).
+clique (Chrome, Edge, Firefox ou Safari).
 
 Importante: não tires o Jogar.exe desta pasta. Ele abre o jogo que está em
 dist/PitchInvaders.html.

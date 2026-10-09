@@ -27,20 +27,27 @@ static const wchar_t *const GAME_FILES[] = {
     L"PitchInvaders.html",
 };
 
-// Browsers com modo "app". Nomes simples são resolvidos pelo Windows através do
-// registo "App Paths"; caminhos com variáveis cobrem instalações fora desse registo.
-static const wchar_t *const BROWSERS[] = {
-    L"chrome.exe",
-    L"%ProgramFiles%\\Google\\Chrome\\Application\\chrome.exe",
-    L"%ProgramFiles(x86)%\\Google\\Chrome\\Application\\chrome.exe",
-    L"%LocalAppData%\\Google\\Chrome\\Application\\chrome.exe",
-    L"msedge.exe",
-    L"%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe",
-    L"%ProgramFiles%\\Microsoft\\Edge\\Application\\msedge.exe",
-    L"%LocalAppData%\\Microsoft\\Edge\\Application\\msedge.exe",
-    L"brave.exe",
-    L"%ProgramFiles%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
-    L"%LocalAppData%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+// Browsers com modo "app", por ordem de preferência. Para cada um, o caminho vem
+// do registo "App Paths" (onde os instaladores o registam) ou de uma pasta de
+// instalação conhecida. Nunca se procura o nome simples na pasta do jogo.
+typedef struct {
+    const wchar_t *app_path_name;
+    const wchar_t *known_paths[3];
+} Browser;
+
+static const Browser BROWSERS[] = {
+    {L"chrome.exe", {
+        L"%ProgramFiles%\\Google\\Chrome\\Application\\chrome.exe",
+        L"%ProgramFiles(x86)%\\Google\\Chrome\\Application\\chrome.exe",
+        L"%LocalAppData%\\Google\\Chrome\\Application\\chrome.exe"}},
+    {L"msedge.exe", {
+        L"%ProgramFiles(x86)%\\Microsoft\\Edge\\Application\\msedge.exe",
+        L"%ProgramFiles%\\Microsoft\\Edge\\Application\\msedge.exe",
+        L"%LocalAppData%\\Microsoft\\Edge\\Application\\msedge.exe"}},
+    {L"brave.exe", {
+        L"%ProgramFiles%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+        L"%ProgramFiles(x86)%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+        L"%LocalAppData%\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"}},
 };
 
 static const wchar_t TITLE[] = L"Pitch Invaders";
@@ -122,6 +129,36 @@ static int launch(const wchar_t *file, const wchar_t *params, const wchar_t *dir
     return ShellExecuteExW(&sei) ? 1 : 0;
 }
 
+// Lê o caminho de um executável em ...\\CurrentVersion\\App Paths\\<nome>
+// (utilizador atual e máquina, vistas de 64 e 32 bits).
+static int app_path_lookup(const wchar_t *name, wchar_t *out, DWORD out_chars) {
+    wchar_t key[160];
+    _snwprintf(key, 159, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\%ls", name);
+    key[159] = 0;
+    const struct { HKEY root; REGSAM view; } places[] = {
+        {HKEY_CURRENT_USER, 0},
+        {HKEY_LOCAL_MACHINE, KEY_WOW64_64KEY},
+        {HKEY_LOCAL_MACHINE, KEY_WOW64_32KEY},
+    };
+    for (size_t i = 0; i < sizeof places / sizeof places[0]; i++) {
+        HKEY h;
+        if (RegOpenKeyExW(places[i].root, key, 0, KEY_QUERY_VALUE | places[i].view, &h) != ERROR_SUCCESS) continue;
+        DWORD bytes = out_chars * sizeof(wchar_t);
+        // RRF_RT_REG_SZ também aceita REG_EXPAND_SZ (o Windows expande-o e devolve-o como REG_SZ).
+        LSTATUS st = RegGetValueW(h, NULL, NULL, RRF_RT_REG_SZ, NULL, out, &bytes);
+        RegCloseKey(h);
+        if (st != ERROR_SUCCESS) continue;
+        out[out_chars - 1] = 0;
+        if (out[0] == L'"') { // alguns instaladores guardam o caminho entre aspas
+            memmove(out, out + 1, wcslen(out) * sizeof(wchar_t));
+            wchar_t *q = wcschr(out, L'"');
+            if (q) *q = 0;
+        }
+        if (is_file(out)) return 1;
+    }
+    return 0;
+}
+
 int WINAPI wWinMain(HINSTANCE inst, HINSTANCE prev, LPWSTR cmd, int show) {
     (void)inst; (void)prev; (void)cmd; (void)show;
 
@@ -171,13 +208,12 @@ int WINAPI wWinMain(HINSTANCE inst, HINSTANCE prev, LPWSTR cmd, int show) {
 
     // 1) Janela própria num browser com modo "app".
     for (size_t i = 0; i < sizeof BROWSERS / sizeof BROWSERS[0]; i++) {
-        const wchar_t *b = BROWSERS[i];
-        if (wcschr(b, L'\\')) {
-            DWORD n = ExpandEnvironmentStringsW(b, exe, PATH_CHARS);
+        const Browser *b = &BROWSERS[i];
+        if (app_path_lookup(b->app_path_name, exe, PATH_CHARS) && launch(exe, params, dir)) return 0;
+        for (size_t j = 0; j < sizeof b->known_paths / sizeof b->known_paths[0]; j++) {
+            DWORD n = ExpandEnvironmentStringsW(b->known_paths[j], exe, PATH_CHARS);
             if (n == 0 || n > PATH_CHARS || !is_file(exe)) continue;
             if (launch(exe, params, dir)) return 0;
-        } else if (launch(b, params, dir)) {
-            return 0;
         }
     }
 

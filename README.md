@@ -13,30 +13,36 @@ Jogo 3D na terceira pessoa: fintas, roletas, saltos e deslizes valem **XP**. O o
 ### Windows (3 passos)
 
 1. **[⬇️ Descarregar o Pitch Invaders](https://github.com/ro0mk/PitchInvaders/raw/HEAD/PitchInvaders.zip)** (ficheiro ZIP com menos de 1 MB)
-2. Na pasta **Transferências**, clica com o botão direito em `PitchInvaders.zip` → **Extrair Tudo…** → **Extrair**.
-3. Na pasta `PitchInvaders` que se abre, faz duplo clique em **`Jogar.exe`**. Pronto!
+2. Na pasta **Transferências**, clica com o botão direito em `PitchInvaders.zip` (pode aparecer só como `PitchInvaders`) → **Extrair Tudo…** → **Extrair**.
+3. Na pasta `PitchInvaders` que se abre, faz duplo clique em **Jogar**, o ficheiro com o ícone verde do jogo (o nome completo é `Jogar.exe`). Pronto!
 
 O jogo abre numa janela própria. Não é preciso instalar nada: o `Jogar.exe` usa o Chrome, se o tiveres, ou o Edge, que já vem com o Windows.
 
-> Na primeira vez, o Windows pode mostrar **"O Windows protegeu o computador"**. Isto acontece com qualquer programa novo que não tenha assinatura digital: carrega em **Mais informações → Executar mesmo assim**.
->
-> Se aparecer a mensagem "Não encontrei o ficheiro do jogo", é porque abriste o `Jogar.exe` sem extrair o ZIP: faz o passo 2 primeiro. Não tires o `Jogar.exe` da pasta: ele abre o jogo que está em `dist`.
+> - Na primeira vez pode aparecer um aviso azul do Windows a dizer que **protegeu o PC**. Acontece com qualquer programa novo sem assinatura digital: carrega em **Mais informações → Executar mesmo assim**.
+> - Se o Windows bloquear o `Jogar.exe` sem mostrar **Executar mesmo assim** (acontece com o *Smart App Control* ligado ou no Windows em *modo S*), abre a pasta `dist` e faz duplo clique em `PitchInvaders.html`: o jogo abre no browser.
+> - Se aparecer a mensagem "Não encontrei o ficheiro do jogo", é porque abriste o `Jogar.exe` sem extrair o ZIP: faz o passo 2 primeiro. Não tires o `Jogar.exe` da pasta, porque ele abre o jogo que está em `dist`.
+> - O `Jogar-Mac-Linux.command` é só para Mac e Linux: no Windows podes ignorá-lo.
 
 ### Mac
 
-1. **[⬇️ Descarregar o Pitch Invaders](https://github.com/ro0mk/PitchInvaders/raw/HEAD/PitchInvaders.zip)** e faz duplo clique no ZIP para o extrair.
-2. Na pasta `PitchInvaders`, clica com o botão direito em **`Jogar.command`** → **Abrir** → **Abrir**. Nas vezes seguintes basta duplo clique.
+1. **[⬇️ Descarregar o Pitch Invaders](https://github.com/ro0mk/PitchInvaders/raw/HEAD/PitchInvaders.zip)**. O Safari costuma extrair o ZIP sozinho; se não, faz duplo clique em `PitchInvaders.zip`.
+2. Na pasta `PitchInvaders`, abre a pasta `dist` e faz duplo clique em **`PitchInvaders.html`**. O jogo abre no Safari (ou no teu browser predefinido). Pronto!
 
-> Se o Mac disser que não consegue verificar o programador, vai a **Definições do Sistema → Privacidade e segurança** e carrega em **Abrir na mesma**.
-> Em alternativa, abre a pasta `dist` e faz duplo clique em `PitchInvaders.html` (abre no Safari).
+**Queres o jogo numa janela própria, sem barra de endereço?** Usa o `Jogar-Mac-Linux.command` (precisa do Chrome, do Edge ou do Brave instalado):
+
+1. Faz duplo clique em `Jogar-Mac-Linux.command`. Na primeira vez o Mac bloqueia-o: carrega em **Concluído** (não escolhas **Mover para o Lixo**).
+2. Abre **Definições do Sistema → Privacidade e segurança**, desce até **Segurança** e carrega em **Abrir na mesma** ao lado de `Jogar-Mac-Linux.command`. Confirma com **Abrir na mesma** e a palavra-passe do Mac.
+3. A partir daí basta duplo clique. (No macOS 14 ou anterior chega fazer Controlo + clique no ficheiro → **Abrir** → **Abrir**.)
 
 ### Linux
 
-Descarrega e extrai o [ZIP](https://github.com/ro0mk/PitchInvaders/raw/HEAD/PitchInvaders.zip) e corre `./Jogar.command` dentro da pasta (ou abre `dist/PitchInvaders.html` no browser).
+Descarrega e extrai o [ZIP](https://github.com/ro0mk/PitchInvaders/raw/HEAD/PitchInvaders.zip) e corre `./Jogar-Mac-Linux.command` dentro da pasta (ou abre `dist/PitchInvaders.html` no browser).
 
 ### Sem executável (qualquer computador)
 
-O jogo inteiro é um único ficheiro: [`dist/PitchInvaders.html`](dist/PitchInvaders.html). Abre-o com duplo clique no Chrome, Edge ou Firefox. Funciona offline.
+O jogo inteiro é um único ficheiro, `PitchInvaders.html`, que está na pasta `dist` do [ZIP](https://github.com/ro0mk/PitchInvaders/raw/HEAD/PitchInvaders.zip). Abre-o com duplo clique: abre no teu browser (Chrome, Edge, Firefox ou Safari) e funciona sem internet.
+
+Se quiseres só esse ficheiro, abre [dist/PitchInvaders.html](dist/PitchInvaders.html) aqui no GitHub e carrega no botão **Download raw file** (a seta ⬇ por cima do código, à direita).
 
 > Os recordes ficam guardados no browser em que jogas. Se mudares de browser, começas do zero.
 
@@ -51,7 +57,7 @@ O GitHub Actions gera também uma app completa a cada push (workflow **Executáv
 - **PitchInvaders-Windows**: `PitchInvaders-1.0.0-portable.exe` (corre sem instalar) ou `PitchInvaders-1.0.0-setup.exe` (instalador)
 - **PitchInvaders-Linux**: `PitchInvaders-1.0.0-linux-x86_64.AppImage` (`chmod +x` e executa)
 - **PitchInvaders-macOS**: `.dmg`
-- **PitchInvaders-simples**: a pasta do jogo com o `Jogar.exe` (o mesmo conteúdo do `PitchInvaders.zip`)
+- **PitchInvaders-simples**: o `PitchInvaders.zip` (o mesmo do link de download do topo)
 
 Se criares uma tag `v*` (por exemplo `v1.0.0`), estes ficheiros são publicados numa **Release**.
 
@@ -62,7 +68,7 @@ npm install
 npm start               # gera o jogo e abre-o na app de ambiente de trabalho (Electron)
 npm run build           # só gera dist/PitchInvaders.html
 npm run build:launcher  # recompila o Jogar.exe (precisa do MinGW-w64)
-npm run pacote          # atualiza o PitchInvaders.zip (corre sempre depois de mudar o jogo)
+npm run pacote          # atualiza o PitchInvaders.zip e o Jogar.exe (corre sempre depois de mudar o jogo)
 npm run dist:win        # gera os .exe do Electron (corre no Windows)
 npm run dist:linux      # gera o AppImage
 npm run dist:mac        # gera o .dmg (corre no macOS)
@@ -136,7 +142,7 @@ Antes de cada ataque aparece um **!** por cima da cabeça do perseguidor. Tens u
 
 ```
 Jogar.exe           lançador para Windows (abre o jogo numa janela própria)
-Jogar.command       lançador para macOS e Linux
+Jogar-Mac-Linux.command   lançador para macOS e Linux
 PitchInvaders.zip   pasta pronta a jogar (Jogar.exe + jogo), o download do topo deste README
 dist/PitchInvaders.html   o jogo completo num único ficheiro
 src/
